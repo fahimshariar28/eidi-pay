@@ -39,6 +39,14 @@ export const metadata: Metadata = {
       "Don't just ask for Eidi, send an official invoice. Generate your link now!",
     url: "https://eidi-pay.vercel.app",
     siteName: "Eidi Pay",
+    images: [
+      {
+        url: "https://eidi-pay.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Eidi Pay Preview",
+      },
+    ],
     locale: "en_BD",
     type: "website",
   },
