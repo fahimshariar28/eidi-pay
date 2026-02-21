@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
+import LoadingInvoice from "@/components/LoadingInvoice";
+import Link from "next/link";
 
 type TInvoice = {
   id: string;
@@ -83,7 +85,7 @@ export default function PaymentPage() {
   if (!invoice)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading Invoice...
+        <LoadingInvoice />
       </div>
     );
 
@@ -197,6 +199,17 @@ export default function PaymentPage() {
                 {loading ? "Updating Status..." : "Confirm Payment"}
               </button>
             </div>
+            <div className="mt-12 p-6 bg-[#E2136E]/5 border border-[#E2136E]/10 text-center">
+              <p className="text-sm font-bold text-zinc-900 mb-4">
+                Want to collect your own Salami? 🧧
+              </p>
+              <Link
+                href="/"
+                className="inline-block bg-[#E2136E] text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs hover:scale-105 transition"
+              >
+                Create Your Salami Link
+              </Link>
+            </div>
           </motion.div>
         ) : (
           /* Success Screen remains the same as image_88b244.png */
@@ -216,6 +229,17 @@ export default function PaymentPage() {
             <p className="mt-6 text-sm font-mono text-zinc-400 bg-zinc-50 p-2 rounded">
               TxID: {invoice.transactionId}
             </p>
+            <div className="mt-12 p-6 bg-[#E2136E]/5 border border-[#E2136E]/10 text-center">
+              <p className="text-sm font-bold text-zinc-900 mb-4">
+                Want to collect your own Salami? 🧧
+              </p>
+              <Link
+                href="/"
+                className="inline-block bg-[#E2136E] text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs hover:scale-105 transition"
+              >
+                Create Your Salami Link
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
