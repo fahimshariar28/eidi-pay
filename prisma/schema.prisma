@@ -71,7 +71,7 @@ model Verification {
 
 model Invoice {
   id            String   @id
-  userId        String
+  userId        String?
   targetName    String
   amount        Int
   bkashNumber   String
@@ -79,7 +79,7 @@ model Invoice {
   status        String   @default("unpaid")
   createdAt     DateTime @default(now())
   transactionId String?
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("invoices")
 }

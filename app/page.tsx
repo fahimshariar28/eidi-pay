@@ -3,12 +3,16 @@ import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { createInvoiceAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [isAuthReady, setIsAuthReady] = useState(false); // Track auth state
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [generatedId, setGeneratedId] = useState("");
+
+  const { data: session } = authClient.useSession();
 
   useEffect(() => {
     const initAuth = async () => {
@@ -48,28 +52,30 @@ export default function Home() {
   }, []);
 
   async function handleSubmit(formData: FormData) {
-    if (!isAuthReady) {
-      alert("Hold on! Securing your session...");
-      return;
-    }
-
     setLoading(true);
     try {
       const res = await createInvoiceAction(formData);
       if (res?.success) {
-        router.push(`/pay/${res.id}`);
+        // Logic: Only show modal if user is NOT logged in or is Anonymous
+        const isRealUser = session && !session.user.isAnonymous;
+
+        if (isRealUser) {
+          // If logged in, skip the noise and go to the link
+          router.push(`/pay/${res.id}`);
+        } else {
+          // Only show the popup for "Ghosts"
+          setGeneratedId(res.id);
+          setShowAuthModal(true);
+        }
       }
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Something went wrong.";
-      alert(errorMessage);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   }
-
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-zinc-50 text-zinc-900">
+    <main className="min-h-screen flex items-center justify-center p-4 bg-zinc-50 text-zinc-900 relative">
       <motion.form
         action={handleSubmit}
         initial={{ opacity: 0, y: 20 }}
@@ -127,6 +133,41 @@ export default function Home() {
               : "Generate Salami Link"}
         </button>
       </motion.form>
+      <AnimatePresence>
+        {showAuthModal && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              className="bg-white p-8 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl border border-zinc-200"
+            >
+              <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                📈
+              </div>
+              <h2 className="text-2xl font-black mb-3">Track your Salami?</h2>
+              <p className="text-zinc-500 text-sm leading-relaxed mb-8">
+                Go beyond Ghost Mode. Log in now to track who paid, view total
+                earnings, and manage your sponsors.
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.push("/login")}
+                  className="w-full bg-[#E2136E] text-white py-4 rounded-2xl font-bold shadow-lg shadow-pink-200 hover:brightness-110 transition cursor-pointer"
+                >
+                  Login to Track
+                </button>
+                <button
+                  onClick={() => router.push(`/pay/${generatedId}`)}
+                  className="w-full bg-zinc-100 text-zinc-600 py-4 rounded-2xl font-bold hover:bg-zinc-200 transition cursor-pointer"
+                >
+                  Continue as Ghost
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
