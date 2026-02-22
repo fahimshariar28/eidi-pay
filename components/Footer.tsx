@@ -9,6 +9,8 @@ export default function Footer() {
         </p>
         <Link
           href="https://fahimshariar.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-sm font-medium text-zinc-900"
         >
           Developed by <span className="font-black">Fahim Shariar</span>
