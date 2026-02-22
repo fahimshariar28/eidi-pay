@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
 import LoadingInvoice from "@/components/LoadingInvoice";
+import PaymentSuccess from "@/components/PaymentSuccess";
 import Link from "next/link";
 
 type TInvoice = {
@@ -22,6 +23,7 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     fetch(`/api/invoice/${id}`)
@@ -51,6 +53,7 @@ export default function PaymentPage() {
   };
 
   const handlePayment = async () => {
+    setShowConfirm(false);
     setLoading(true);
     const generatedTxId = Math.random()
       .toString(36)
@@ -121,7 +124,7 @@ export default function PaymentPage() {
             exit={{ opacity: 0, scale: 0.8 }}
             className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-zinc-200"
           >
-            <div className="bg-black p-8 text-white text-center">
+            <div className="bg-[#E2136E] text-white p-8 text-center">
               <h2 className="text-sm uppercase tracking-widest opacity-70">
                 Official Salami Invoice
               </h2>
@@ -148,7 +151,7 @@ export default function PaymentPage() {
                   />
                   <button
                     onClick={handleCopy}
-                    className={`bg-zinc-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-zinc-700 transition ${!copied && "cursor-pointer"} ${copied ? "bg-green-600 hover:bg-green-500" : ""}`}
+                    className={`bg-[#E2136E] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#c00f5c] transition ${!copied && "cursor-pointer"} ${copied ? "bg-green-600 hover:bg-green-500" : ""}`}
                   >
                     {copied ? "Copied!" : "Copy"}
                   </button>
@@ -192,7 +195,7 @@ export default function PaymentPage() {
               )}
 
               <button
-                onClick={handlePayment}
+                onClick={() => setShowConfirm(true)}
                 disabled={loading}
                 className="w-full bg-[#E2136E] text-white font-bold py-4 rounded-xl hover:brightness-110 transition disabled:opacity-50 cursor-pointer"
               >
@@ -212,35 +215,44 @@ export default function PaymentPage() {
             </div>
           </motion.div>
         ) : (
-          /* Success Screen remains the same as image_88b244.png */
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-md w-full border-t-8 border-green-500"
-          >
-            <div className="text-6xl mb-4 text-green-500">✅</div>
-            <h2 className="text-2xl font-black italic uppercase">
-              Salami Received!
-            </h2>
-            <p className="text-zinc-500 mt-2">
-              ৳{invoice.amount} added to wallet.
-            </p>
-            <p className="mt-6 text-sm font-mono text-zinc-400 bg-zinc-50 p-2 rounded">
-              TxID: {invoice.transactionId}
-            </p>
-            <div className="mt-12 p-6 bg-[#E2136E]/5 border border-[#E2136E]/10 text-center">
-              <p className="text-sm font-bold text-zinc-900 mb-4">
-                Want to collect your own Salami? 🧧
+          <PaymentSuccess
+            amount={invoice.amount}
+            txId={invoice.transactionId}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl"
+            >
+              <h2 className="text-xl font-black mb-2">
+                Did you send the money? 💸
+              </h2>
+              <p className="text-zinc-500 text-sm mb-6">
+                Please ensure you have sent ৳{invoice.amount} to{" "}
+                {invoice.bkashNumber} via bKash/Nagad before confirming.
               </p>
-              <Link
-                href="/"
-                className="inline-block bg-[#E2136E] text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs hover:scale-105 transition"
-              >
-                Create Your Salami Link
-              </Link>
-            </div>
-          </motion.div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handlePayment}
+                  className="w-full bg-[#E2136E] text-white py-4 rounded-xl font-bold hover:brightness-110 transition cursor-pointer"
+                >
+                  Yes, I have sent it
+                </button>
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="w-full bg-zinc-100 text-zinc-500 py-4 rounded-xl font-bold hover:bg-zinc-200 transition cursor-pointer"
+                >
+                  No, go back
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </main>
