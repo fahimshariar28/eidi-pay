@@ -84,7 +84,7 @@ export default async function DashboardPage() {
           </h3>
           <Link
             href="/"
-            className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-zinc-800 transition"
+            className="bg-[#E2136E] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#c00f5c] transition cursor-pointer"
           >
             + Create New
           </Link>

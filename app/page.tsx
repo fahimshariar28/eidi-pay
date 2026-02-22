@@ -124,7 +124,7 @@ export default function Home() {
         <button
           type="submit"
           disabled={loading || !isAuthReady}
-          className="w-full bg-black text-white font-bold rounded-xl hover:bg-zinc-800 transition cursor-pointer disabled:opacity-50 h-14 relative flex items-center justify-center overflow-hidden"
+          className="w-full bg-[#E2136E] text-white font-bold rounded-xl hover:bg-[#c00f5c] transition cursor-pointer disabled:opacity-50 h-14 relative flex items-center justify-center overflow-hidden"
         >
           <AnimatePresence mode="wait">
             {!isAuthReady ? (
@@ -133,6 +133,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                className="pointer-events-none"
               >
                 Initializing...
               </motion.span>
@@ -142,10 +143,10 @@ export default function Home() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="flex items-center gap-2"
+                className="pointer-events-none flex items-center gap-2"
               >
                 {/* CSS Spinner */}
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin cursor-not-allowed" />
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 <span>Generating Link...</span>
               </motion.div>
             ) : (
